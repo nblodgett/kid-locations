@@ -73,14 +73,17 @@ function AppViewModel() {
         this.foursquareId = place.foursquareId;
         this.showResult = ko.observable(true);
         this.removedResult = ko.observable(false);
-        this.marker;
+        this.marker = ko.observable();
         this.infowindow;
+        //this.marker.setVisible = function(){};
         this.latlng;
         this.location;
         this.address = "Not Found";
         this.city = "Not Found";
+        //this.results;
         this.rating = "Not Found";
         this.url = "Not Found";
+        //this.setVisible = function(){};
     };
 
     self.foursquareRequest = function(place){
@@ -114,6 +117,9 @@ function AppViewModel() {
         geocoder.geocode({ "placeId": place.placeId },
             function(results, status) {
                 if (status === "OK") {
+                    // Store results from geocode request
+                    //place.results = results;
+                    // Store lat long results
                     place.latlng = results[0].geometry.location;
                     // Create Google Maps Marker
                     marker = new google.maps.Marker({
@@ -189,8 +195,10 @@ function AppViewModel() {
         return place;
     };
 
-    //self.Place.prototype.setVisible = function() {
-    //};
+    self.Place.prototype.setVisible = function(input) {
+        console.log("function exec!")
+        self.Place.prototype.marker.setVisible(input);
+    };
 
     self.markerBounce = function(place) {
         // Stop any marker animation and close info windows
@@ -212,7 +220,7 @@ function AppViewModel() {
         }
     };
 
-    /*
+
     self.Place.prototype.showMarker = function() {
         Place.marker.setVisible(true);
     };
@@ -220,7 +228,7 @@ function AppViewModel() {
     self.Place.prototype.hideMarker = function() {
         Place.marker.setVisible(false);
     };
-    */
+
 
     // initialize the array of locations
     self.init = function() {
@@ -364,9 +372,7 @@ function AppViewModel() {
         this.marker.setVisible(input)
     }
     */
-    self.setVisible = function(place, input) {
-        //place.marker.setVisible(input);
-    }
+
 
 
     // Add location to list of shown places and show marker
@@ -375,9 +381,7 @@ function AppViewModel() {
         currentPlace.removedResult(false);
 
         // Add show marker on map
-        //currentPlace.setVisible(true);
-        self.setVisible(currentPlace, true);
-
+        currentPlace.setVisible(true);
         //currentPlace.toggleMarker(true);
         //currentPlace.marker.setVisible(true);
     };
@@ -388,8 +392,7 @@ function AppViewModel() {
         currentPlace.removedResult(true);
 
         // Hide marker from map
-        //currentPlace.setVisible(false);
-        self.setVisible(currentPlace, false);
+        currentPlace.setVisible(false);
         //currentPlace.showMarker();
         //currentPlace.toggleMarker(false);
 
@@ -426,15 +429,8 @@ function AppViewModel() {
         }
     });
 
-    /*
     self.Place.prototype.setVisible = function(input) {
-        //console.log("function exec!")
+        console.log("function exec!")
         this.marker.setVisible(input);
     };
-    */
-
-    self.setVisible = function(place, input) {
-        place.marker.setVisible(input);
-    }
-
 };
