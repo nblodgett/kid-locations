@@ -11,7 +11,11 @@
 </head>
 
 <body>
-    <div id="map"></div>
+    <div id="map">
+            <span>Google Maps is not loading,</span><br>
+            <span>please try again later...</span>
+    </div>
+
     <nav id="navigation" data-bind="visible: navToggle">
         <h1 id="nav_heading_h1" class="nav_item nav_heading">Kid Locations</h1>
         <span class="nav_item nav_heading">Filter (title or keywords):</span>
@@ -47,5 +51,4 @@
 <script src="js/viewModel.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFP6vJUVgchaZ-vCeB3U91iXZXCYxTJSA&callback=initMap">
 </script>
-
 </html>
