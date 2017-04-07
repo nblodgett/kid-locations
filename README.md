@@ -3,9 +3,11 @@
 
 Project is hosted on Github, to run click the link: https://nblodgett.github.io/kid-locations/
 
-Or download the zip file and execute the index.html file.
+Or download the zip file, unzip, and execute index.html.
 
-This project is a single page app utilizing knockout framework to display page elements.
+This project is a single page app utilizing knockout.js framework to display page elements.
+
+The following APIs are used:
 
 Google Maps API for the map information:
 	* Map

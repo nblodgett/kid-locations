@@ -10,7 +10,7 @@ initMap = function() {
     };
 
     // Instantiate Google Maps map
-    map = new google.maps.Map(document.getElementById("map"), {
+    map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,
         center: mapCenter
     });
@@ -39,11 +39,11 @@ function AppViewModel() {
         //this.infowindow = ko.observable();
         this.latlng;
         this.location;
-        this.address = ko.observable("");
-        this.city = ko.observable("");
-        this.rating = ko.observable("");
-        this.url = ko.observable("");
-        this.foursquarePng = "<img src='img/foursquare.png' style='display: block; width: 100px'>";
+        this.address = ko.observable('');
+        this.city = ko.observable('');
+        this.rating = ko.observable('');
+        this.url = ko.observable('');
+        this.foursquarePng = '<img src="img/foursquare.png" style="display: block; width: 100px">';
 
         this.windowInfo = ko.computed(function() {
             return this.placeName + this.address() + this.city() + this.rating() + this.url() + this.foursquarePng;
@@ -52,7 +52,7 @@ function AppViewModel() {
 
 
     // Search box input
-    self.filterResults = ko.observable("");
+    self.filterResults = ko.observable('');
 
     // Observe when extra features should be disabled
     self.showExtras = ko.observable(true);
@@ -93,14 +93,14 @@ function AppViewModel() {
         foursquareId: "4b9ac1c8f964a520f0d235e3"
     }];
 
-    self.foursquareRequest = function(place){
+    self.foursquareRequest = function(place) {
         // Foursquare Login Credentials
-        var CLIENT_ID = "YZ500XJ5SXV3IXBQVCRCRT3GAYTRWHU3KRSTT5GIABUFW0U5";
-        var CLIENT_SECRET = "5QP3GVZZII2BE20DF35QA3BZSEPQDRPI2ZH5QXVRK5XRRKKH";
+        var CLIENT_ID = 'YZ500XJ5SXV3IXBQVCRCRT3GAYTRWHU3KRSTT5GIABUFW0U5';
+        var CLIENT_SECRET = '5QP3GVZZII2BE20DF35QA3BZSEPQDRPI2ZH5QXVRK5XRRKKH';
         var venueId = place.foursquareId;
-        var url = "https://api.foursquare.com/v2/venues/" + venueId +
-        "?client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET +
-        "&v=20170403";
+        var url = 'https://api.foursquare.com/v2/venues/' + venueId +
+            '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
+            '&v=20170403';
 
         // Foursquare AJAX Request
         $.ajax({
@@ -108,25 +108,30 @@ function AppViewModel() {
             datatype: "json",
             success: function(data) {
                 // store rating if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.rating !== "undefined") {
+                if (typeof data.response.venue.rating !== 'undefined' && data.response.venue.rating !== "NOT FOUND") {
                     place.rating('<span>Rating: ' + data.response.venue.rating + '</span><br>');
                 }
                 // store URL if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.url !== "undefined") {
+                if (typeof data.response.venue.url !== 'undefined' && data.response.venue.url !== "NOT FOUND") {
                     place.url('<a target="blank" href="' + data.response.venue.url + '">' + data.response.venue.url + '</a><br>');
                 }
-                // store address if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.location.address !== "undefined") {
-                    place.address('<br><span>' + data.response.venue.location.address + '</span><br>');
-                }
                 // store city if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.location.city !== "undefined") {
+                if (typeof data.response.venue.location.city !== 'undefined' && data.response.venue.location.city !== 'NOT FOUND') {
                     place.city('<span>' + data.response.venue.location.city + '</span><br>');
                 }
+                // store address if defined (requested successfully from Foursquare)
+                if (typeof data.response.venue.location.address !== 'undefined' && data.response.venue.location.address !== 'NOT FOUND') {
+                    place.address('<br><span>' + data.response.venue.location.address + '</span><br>');
+                } else {
+                    place.address('<img src="img/sad.gif" alt="sad day" style="display: block; max-width: 100px">' +
+                        '<div style = "display: block">Error retrieving address-<br>Try Refreshing...</div>');
+                }
+
             },
             // If Foursquare request fails, display error in infowindow
             error: function() {
-                place.address('<img src="img/sad.gif" style="display: block; max-width: 200px">' + '<div style = "display: block"> Foursquare failed to return results-<br>Please try again later...</div>');
+                place.address('<img src="img/sad.gif" alt="sad day" style="display: block; max-width: 200px">' +
+                    '<div style = "display: block"> Foursquare failed to return results-<br>Please try again later...</div>');
             }
         });
     };
@@ -135,9 +140,9 @@ function AppViewModel() {
     // Adapted from Google geocoding documentation
     // https://developers.google.com/maps/documentation/geocoding/intro
     self.geocode = function(place) {
-        geocoder.geocode({ "placeId": place.placeId },
+        geocoder.geocode({ 'placeId': place.placeId },
             function(results, status) {
-                if (status === "OK") {
+                if (status === 'OK') {
                     place.latlng = results[0].geometry.location;
                     // Create Google Maps Marker
                     marker = new google.maps.Marker({
@@ -153,17 +158,17 @@ function AppViewModel() {
                     // Add marker to markers array
                     markers.push(marker);
 
-                    place.marker.addListener ("click", (function(markerCopy) {
+                    place.marker.addListener('click', (function(markerCopy) {
                         return function() {
                             infowindow.close();
-                            for(i = 0; i < markers.length; i++) {
+                            for (i = 0; i < markers.length; i++) {
                                 // Stop all existing marker animations
                                 markers[i].setAnimation(null);
                             }
                             // Center the map to the marker
                             map.setCenter(markerCopy.getPosition());
                             // Update infowindow with current marker's info
-                            infowindow.setContent(place.windowInfo()); // TODO
+                            infowindow.setContent(place.windowInfo());
                             // Open info window on clicked marker
                             infowindow.open(map, markerCopy);
                             // Animate clicked marker
@@ -191,7 +196,7 @@ function AppViewModel() {
 
     // Stop any existing markers bouncing
     self.stopAllMarkers = function() {
-        for(i = 0; i < infoWindows.length; i++) {
+        for (i = 0; i < infoWindows.length; i++) {
             // Stop all existing marker animations
             markers[i].setAnimation(null);
         }
@@ -246,8 +251,7 @@ function AppViewModel() {
     };
 
     // Set visible function declared to avoid errors on init()
-    self.setVisible = function() {
-    }
+    self.setVisible = function() {}
 
     // Add location to list of shown places and show marker
     self.show = function(currentPlace) {
@@ -271,7 +275,7 @@ function AppViewModel() {
     // Render all locations
     self.reset = function() {
         // Clear filter box
-        self.filterResults("");
+        self.filterResults('');
         // Reset shown locations
         for (i = 0; i < self.locations().length; i++) {
             self.show(self.locations()[i]);
@@ -282,14 +286,14 @@ function AppViewModel() {
     self.filterResultsFunc = ko.computed(function() {
         // Filter Results
         // If there is no input in the filter box, bring back extra filtering features
-        if (self.filterResults() === "") {
+        if (self.filterResults() === '') {
             self.reset();
             // Show extra filtering features
             self.showExtras(true);
         } else {
             // Hide extra filtering features;
             self.showExtras(false)
-            // Filter shown results
+                // Filter shown results
             self.filterFunc(self.filterResults());
         }
     });

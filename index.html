@@ -12,33 +12,33 @@
 
 <body>
     <div id="map">
-            <span>Google Maps is not loading,</span><br>
-            <span>please try again later...</span>
+        <span>Google Maps is not loading,</span>
+        <br>
+        <span>please try again later...</span>
     </div>
-
     <nav id="navigation" data-bind="visible: navToggle">
-        <h1 id="nav_heading_h1" class="nav_item nav_heading">Kid Locations</h1>
-        <span class="nav_item nav_heading">Filter (title or keywords):</span>
+        <h1 id="nav-heading-h1" class="nav-item nav-heading">Kid Locations</h1>
+        <span class="nav-item nav-heading">Filter (title or keywords):</span>
         <input type="text" data-bind="textInput: filterResults">
         </h3>
-        <div class="nav_item">
+        <div class="nav-item">
             <button value="reset" data-bind="click:reset">Show All Locations</button>
         </div>
-        <h3 class="nav_item nav_heading">On Map:</h3>
+        <h3 class="nav-item nav-heading">On Map:</h3>
         <div>
-            <ul data-bind="foreach: locations" class="nav_item list">
+            <ul data-bind="foreach: locations" class="nav-item list">
                 <li data-bind="visible:showResult">
-                    <a href="#" data-bind="text:placeName, click: $root.markerBounce" class="link link_location"></a>
-                    <a href="#" data-bind="click: $root.updateList, visible: $root.showExtras" class="link link_remove">(X)</a>
+                    <a href="#" data-bind="text:placeName, click: $root.markerBounce" class="link link-location"></a>
+                    <a href="#" data-bind="click: $root.updateList, visible: $root.showExtras" class="link link-remove">(X)</a>
                 </li>
             </ul>
         </div>
         <div data-bind="visible: showExtras">
-            <h3 class="nav_item nav_heading">Removed From Map:</h3>
-            <ul data-bind="foreach: locations()" class="nav_item list">
+            <h3 class="nav-item nav-heading">Removed From Map:</h3>
+            <ul data-bind="foreach: locations()" class="nav-item list">
                 <li data-bind="visible: removedResult">
-                    <a href="#" data-bind="text:placeName" class="link link_location"></a>
-                    <a href="#" data-bind="click: $root.updateList" class="link link_add">(X)</a>
+                    <a href="#" data-bind="text:placeName" class="link link-location"></a>
+                    <a href="#" data-bind="click: $root.updateList" class="link link-add">(X)</a>
                 </li>
             </ul>
         </div>
@@ -51,4 +51,5 @@
 <script src="js/viewModel.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFP6vJUVgchaZ-vCeB3U91iXZXCYxTJSA&callback=initMap">
 </script>
+
 </html>

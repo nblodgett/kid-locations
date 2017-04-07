@@ -4,7 +4,7 @@
 
 html,
 body {
-    font-family: 'Indie Flower', cursive;
+    font-family: "indie flower", cursive;
     color: #000;
     position: relative;
     width: 100%;
@@ -32,8 +32,8 @@ ul {
     height: 100%;
     overflow: hidden;
     position: absolute;
-    top: 0px;
-    right: 0px;
+    top: 0;
+    right: 0;
     outline: darkgrey solid thin;
     background-color: #f1f1f1;
     padding: 10px;
@@ -53,13 +53,13 @@ ul {
     color: #000;
 }
 
-.link_add,
-.link_remove {
+.link-add,
+.link-remove {
     float: right;
     padding-right: 30px;
 }
 
-#show_all {
+#show-all {
     width: 160px;
 }
 
@@ -71,7 +71,7 @@ ul {
 /* Hamburger menu icon in CSS
     Attribution - Adapted from:
     http://stackoverflow.com/questions/26150963/how-to-make-this-css-hamburger-menu-entirely-clickable
-  */
+ */
 
 .hamburger-menu {
     width: 25px;
@@ -107,6 +107,3 @@ ul {
 .hamburger-menu:hover {
     cursor: pointer;
 }
-
-
-
