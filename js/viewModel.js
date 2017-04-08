@@ -115,7 +115,6 @@ function AppViewModel() {
     // Adapted from Google geocoding documentation
     // https://developers.google.com/maps/documentation/geocoding/intro
     self.geocode = function(place) {
-        console.log("geocode started");
         geocoder.geocode({ 'placeId': place.placeId },
             function(results, status) {
                 if (status === 'OK') {
