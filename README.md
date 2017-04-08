@@ -19,3 +19,16 @@ Foursquare API for the location details:
 	* City
 	* Rating
 	* URL
+
+## Notes of changes from previous project review
+
+
+### index.html Changes from code review:
+* Line 10:  `type` attributes removed from style sheets and scripts
+* Line 14: map div changed to main tag
+* Line 53: added `async` and `defer` attributes to Google Maps API loading
+
+
+### viewModel.js
+* double-quotes have been replaced with single-quotes
+* initialLocations have been moved out of the viewModel and into model.js

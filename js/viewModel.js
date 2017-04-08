@@ -2,6 +2,11 @@ var map;
 var geocoder;
 var infowindow;
 
+// Global function that is called when Google Maps Authentication fails
+function gm_authFailure() {
+    alert('There is a problem with Google Maps, please try again later...');
+};
+
 // Initialize
 initMap = function() {
     var mapCenter = {
@@ -39,11 +44,22 @@ function AppViewModel() {
         //this.infowindow = ko.observable();
         this.latlng;
         this.location;
+        this.status = ko.observable(true); // Google geocoding status
         this.address = ko.observable('');
         this.city = ko.observable('');
         this.rating = ko.observable('');
         this.url = ko.observable('');
         this.foursquarePng = '<img src="img/foursquare.png" style="display: block; width: 100px">';
+
+        // Add marker listener
+        /*
+        this.marker.addListener('click', (function(placeCopy) {
+                return function() {
+                self.markerBounce(placeCopy);
+                }
+            })(place));
+        };
+        */
 
         this.windowInfo = ko.computed(function() {
             return this.placeName + this.address() + this.city() + this.rating() + this.url() + this.foursquarePng;
@@ -65,33 +81,6 @@ function AppViewModel() {
 
     // Observable array of listed locations
     self.locations = ko.observableArray([]);
-
-    // Initial array of places
-    self.initialLocations = [{
-        placeName: "Pump It Up",
-        googleId: "ChIJWWlgdKnpj4ARzozLyS5OFOI",
-        foursquareId: "4b5b2fe4f964a520a2e928e3"
-    }, {
-        placeName: "Chuck E. Cheese's",
-        googleId: "ChIJfX2QMWrsj4ARwuumaU_NQx0",
-        foursquareId: "4b1ae229f964a520e1f323e3"
-    }, {
-        placeName: "Livermore Cinemas",
-        googleId: "ChIJLejCJqDnj4ARE8vd-IHvrdc",
-        foursquareId: "4a5fa92bf964a520ffbf1fe3"
-    }, {
-        placeName: "Mission Hills Park",
-        googleId: "ChIJ_2mH4Mbpj4ARXWPztOKr5jc",
-        foursquareId: "4c0bd8017e3fc928d8dbf582"
-    }, {
-        placeName: "Taco Bell",
-        googleId: "ChIJe20AkTnpj4ARLqelQBR_Urw",
-        foursquareId: "4c0d46f2b1b676b0f957e086"
-    }, {
-        placeName: "Shadow Cliffs Regional Recreation",
-        googleId: "ChIJP40E40Toj4ARde_vhOcsrRY",
-        foursquareId: "4b9ac1c8f964a520f0d235e3"
-    }];
 
     self.foursquareRequest = function(place) {
         // Foursquare Login Credentials
@@ -142,7 +131,11 @@ function AppViewModel() {
     self.geocode = function(place) {
         geocoder.geocode({ 'placeId': place.placeId },
             function(results, status) {
+                //console.log(status);
+                //console.log(place.placeId);
                 if (status === 'OK') {
+                    place.status(true);
+                    //console.log(results[0]);
                     place.latlng = results[0].geometry.location;
                     // Create Google Maps Marker
                     marker = new google.maps.Marker({
@@ -157,7 +150,7 @@ function AppViewModel() {
 
                     // Add marker to markers array
                     markers.push(marker);
-
+                    /*
                     place.marker.addListener('click', (function(markerCopy) {
                         return function() {
                             infowindow.close();
@@ -175,28 +168,42 @@ function AppViewModel() {
                             markerCopy.setAnimation(google.maps.Animation.BOUNCE);
                         };
                     })(marker));
-                    // If Geocoding was not successfull alert it
+                    */
+
+                    place.marker.addListener('click', (function(placeCopy) {
+                        return function() {
+                            self.markerBounce(placeCopy);
+                        }
+                    })(place));
+
+
+                // If Geocoding was not successfull remove from list and flag status as false
                 } else {
-                    alert("Geocoding " + currentPlace.placeName + " unsuccessful!");
+                    place.status(false);
+                    place.showResult(false);
+                    place.removedResult(false);
                 }
             });
     };
 
     // Set the clicked marker to bounce, and open the infowindow
     self.markerBounce = function(place) {
+
         // Stop any marker animation and close info windows
         self.stopAllMarkers();
         // Center the window to the highlighted marker
         map.setCenter(place.marker.getPosition());
+        // Update infowindow with current marker's info
+        infowindow.setContent(place.windowInfo());
         // Set marker selected marker to animate
         place.marker.setAnimation(google.maps.Animation.BOUNCE);
         // Open selected marker's info window
-        place.infoWindow.open(map, place.marker);
+        infowindow.open(map, place.marker);
     };
 
     // Stop any existing markers bouncing
     self.stopAllMarkers = function() {
-        for (i = 0; i < infoWindows.length; i++) {
+        for (i = 0; i < markers.length; i++) {
             // Stop all existing marker animations
             markers[i].setAnimation(null);
         }
@@ -204,9 +211,9 @@ function AppViewModel() {
 
     // initialize the array of locations
     self.init = function() {
-        var len = self.initialLocations.length;
+        var len = initialLocations.length;
         for (i = 0; i < len; i++) {
-            var x = self.initialLocations[i];
+            var x = initialLocations[i];
             // Instantiate place
             place = new self.Place(x);
             // puch new place to the locations array
@@ -278,7 +285,10 @@ function AppViewModel() {
         self.filterResults('');
         // Reset shown locations
         for (i = 0; i < self.locations().length; i++) {
-            self.show(self.locations()[i]);
+            // If geocode status was ok then show location
+            if (self.locations()[i].status() === true) {
+                self.show(self.locations()[i]);
+            }
         }
     };
 

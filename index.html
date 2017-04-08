@@ -7,15 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale= 1">
     <title>Kid Friendly</title>
     <link href="https://fonts.googleapis.com/css?family=Indie+Flower" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-    <div id="map">
+    <main id="map">
         <span>Google Maps is not loading,</span>
         <br>
         <span>please try again later...</span>
-    </div>
+    </main>
+
     <nav id="navigation" data-bind="visible: navToggle">
         <h1 id="nav-heading-h1" class="nav-item nav-heading">Kid Locations</h1>
         <span class="nav-item nav-heading">Filter (title or keywords):</span>
@@ -48,8 +49,9 @@
 </body>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/knockout/dist/knockout.js"></script>
+<script src="js/model.js"></script>
 <script src="js/viewModel.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFP6vJUVgchaZ-vCeB3U91iXZXCYxTJSA&callback=initMap">
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAFP6vJUVgchaZ-vCeB3U91iXZXCYxTJSA&callback=initMap" async defer>
 </script>
 
 </html>
