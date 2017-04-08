@@ -32,3 +32,9 @@ Foursquare API for the location details:
 ### viewModel.js
 * double-quotes have been replaced with single-quotes
 * initialLocations have been moved out of the viewModel and into model.js
+* infowindow was optimized to move and populate with marker's info rather than create multiple infowindows
+* Foursquare AJAX request refactored so clicking marker will fire request and load data.
+* error handling was added to google maps, foursquare
+* if geocode fails, location is removed from the view entirely
+* filter function is working
+* setVisible called directly on marker object

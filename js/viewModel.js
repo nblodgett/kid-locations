@@ -13,26 +13,21 @@ initMap = function() {
         lat: 37.6624,
         lng: -121.8820
     };
-
     // Instantiate Google Maps map
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,
         center: mapCenter
     });
-
     // Instantiate Google Maps InfoWindow
     infowindow = new google.maps.InfoWindow();
-
     // Instantiate Google Maps Geocoder
     geocoder = new google.maps.Geocoder();
-
     // Apply bindings and instantiate AppViewModel
     ko.applyBindings(new AppViewModel());
 };
 
 function AppViewModel() {
     var self = this;
-
     // place constructor function
     self.Place = function(place) {
         this.placeName = place.placeName;
@@ -50,22 +45,12 @@ function AppViewModel() {
         this.rating = ko.observable('');
         this.url = ko.observable('');
         this.foursquarePng = '<img src="img/foursquare.png" style="display: block; width: 100px">';
-
-        // Add marker listener
-        /*
-        this.marker.addListener('click', (function(placeCopy) {
-                return function() {
-                self.markerBounce(placeCopy);
-                }
-            })(place));
-        };
-        */
-
         this.windowInfo = ko.computed(function() {
             return this.placeName + this.address() + this.city() + this.rating() + this.url() + this.foursquarePng;
         }, this);
+        // Geocode location
+        self.geocode(this);
     };
-
 
     // Search box input
     self.filterResults = ko.observable('');
@@ -90,37 +75,38 @@ function AppViewModel() {
         var url = 'https://api.foursquare.com/v2/venues/' + venueId +
             '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET +
             '&v=20170403';
-
         // Foursquare AJAX Request
         $.ajax({
             url: url,
             datatype: "json",
             success: function(data) {
+                place.data = data;
                 // store rating if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.rating !== 'undefined' && data.response.venue.rating !== "NOT FOUND") {
-                    place.rating('<span>Rating: ' + data.response.venue.rating + '</span><br>');
+                if (typeof place.data.response.venue.rating !== 'undefined') {
+                    place.rating('<span>Rating: ' + place.data.response.venue.rating + '</span><br>');
                 }
                 // store URL if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.url !== 'undefined' && data.response.venue.url !== "NOT FOUND") {
-                    place.url('<a target="blank" href="' + data.response.venue.url + '">' + data.response.venue.url + '</a><br>');
+                if (typeof place.data.response.venue.url !== 'undefined') {
+                    place.url('<a target="blank" href="' + place.data.response.venue.url + '">' + place.data.response.venue.url + '</a><br>');
                 }
                 // store city if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.location.city !== 'undefined' && data.response.venue.location.city !== 'NOT FOUND') {
-                    place.city('<span>' + data.response.venue.location.city + '</span><br>');
+                if (typeof place.data.response.venue.location.city !== 'undefined') {
+                    place.city('<span>' + place.data.response.venue.location.city + '</span><br>');
                 }
                 // store address if defined (requested successfully from Foursquare)
-                if (typeof data.response.venue.location.address !== 'undefined' && data.response.venue.location.address !== 'NOT FOUND') {
-                    place.address('<br><span>' + data.response.venue.location.address + '</span><br>');
+                if (typeof place.data.response.venue.location.address !== 'undefined') {
+                    place.address('<br><span>' + place.data.response.venue.location.address + '</span><br>');
                 } else {
                     place.address('<img src="img/sad.gif" alt="sad day" style="display: block; max-width: 100px">' +
                         '<div style = "display: block">Error retrieving address-<br>Try Refreshing...</div>');
                 }
-
+                self.changeInfowindow(place);
             },
             // If Foursquare request fails, display error in infowindow
             error: function() {
                 place.address('<img src="img/sad.gif" alt="sad day" style="display: block; max-width: 200px">' +
                     '<div style = "display: block"> Foursquare failed to return results-<br>Please try again later...</div>');
+                    self.changeInfowindow(place);
             }
         });
     };
@@ -129,13 +115,11 @@ function AppViewModel() {
     // Adapted from Google geocoding documentation
     // https://developers.google.com/maps/documentation/geocoding/intro
     self.geocode = function(place) {
+        console.log("geocode started");
         geocoder.geocode({ 'placeId': place.placeId },
             function(results, status) {
-                //console.log(status);
-                //console.log(place.placeId);
                 if (status === 'OK') {
                     place.status(true);
-                    //console.log(results[0]);
                     place.latlng = results[0].geometry.location;
                     // Create Google Maps Marker
                     marker = new google.maps.Marker({
@@ -144,40 +128,17 @@ function AppViewModel() {
                         title: place.placeName,
                         animation: google.maps.Animation.DROP
                     });
-
                     // Make current marker a property of place
                     place.marker = marker;
-
                     // Add marker to markers array
                     markers.push(marker);
-                    /*
+                    // Add marker listener
                     place.marker.addListener('click', (function(markerCopy) {
                         return function() {
-                            infowindow.close();
-                            for (i = 0; i < markers.length; i++) {
-                                // Stop all existing marker animations
-                                markers[i].setAnimation(null);
-                            }
-                            // Center the map to the marker
-                            map.setCenter(markerCopy.getPosition());
-                            // Update infowindow with current marker's info
-                            infowindow.setContent(place.windowInfo());
-                            // Open info window on clicked marker
-                            infowindow.open(map, markerCopy);
-                            // Animate clicked marker
-                            markerCopy.setAnimation(google.maps.Animation.BOUNCE);
-                        };
-                    })(marker));
-                    */
-
-                    place.marker.addListener('click', (function(placeCopy) {
-                        return function() {
-                            self.markerBounce(placeCopy);
+                        self.foursquareRequest(place);
                         }
-                    })(place));
-
-
-                // If Geocoding was not successfull remove from list and flag status as false
+                    })(place.marker));
+                    // If Geocoding was not successfull remove from list and flag status as false
                 } else {
                     place.status(false);
                     place.showResult(false);
@@ -186,12 +147,9 @@ function AppViewModel() {
             });
     };
 
-    // Set the clicked marker to bounce, and open the infowindow
-    self.markerBounce = function(place) {
-
-        // Stop any marker animation and close info windows
+    self.changeInfowindow = function(place) {
         self.stopAllMarkers();
-        // Center the window to the highlighted marker
+        // Center the window to the clicked location
         map.setCenter(place.marker.getPosition());
         // Update infowindow with current marker's info
         infowindow.setContent(place.windowInfo());
@@ -199,7 +157,7 @@ function AppViewModel() {
         place.marker.setAnimation(google.maps.Animation.BOUNCE);
         // Open selected marker's info window
         infowindow.open(map, place.marker);
-    };
+    }
 
     // Stop any existing markers bouncing
     self.stopAllMarkers = function() {
@@ -216,12 +174,8 @@ function AppViewModel() {
             var x = initialLocations[i];
             // Instantiate place
             place = new self.Place(x);
-            // puch new place to the locations array
+            // push new place to the locations array
             self.locations().push(place);
-            // Send AJAX Request to Foursquare for additional data
-            self.foursquareRequest(place);
-            // Geocode place and populate map
-            self.geocode(place);
         }
     };
 
@@ -229,7 +183,6 @@ function AppViewModel() {
     self.updateList = function(place) {
         if (place.showResult() === true) {
             self.remove(place);
-            //self.hideMarker(place);
         } else {
             self.show(place);
         }
@@ -272,7 +225,6 @@ function AppViewModel() {
     self.remove = function(currentPlace) {
         currentPlace.showResult(false);
         currentPlace.removedResult(true);
-
         // Hide marker from map
         self.setVisible(currentPlace, false);
         // Close info window if locations are being removed from view
@@ -311,7 +263,7 @@ function AppViewModel() {
     // Show or hide a marker
     self.setVisible = function(place, input) {
         place.marker.setVisible(input);
-    }
+    };
 
     // INIT
     self.init();
