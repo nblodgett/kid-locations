@@ -5,7 +5,14 @@ var infowindow;
 // This is an error callback function that is called when Google Maps Authentication fails
 // Per the Google Maps API documentation 'Listening for authentication errors' :
 //https://developers.google.com/maps/documentation/javascript/events#auth-errors
+/*
 function gm_authFailure() {
+    //alert('There is a problem with Google Maps, please try again later...');
+}
+*/
+
+// Error handling for Google maps
+function mapsError() {
     alert('There is a problem with Google Maps, please try again later...');
 }
 
