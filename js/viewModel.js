@@ -2,10 +2,12 @@ var map;
 var geocoder;
 var infowindow;
 
-// Global function that is called when Google Maps Authentication fails
+// This is an error callback function that is called when Google Maps Authentication fails
+// Per the Google Maps API documentation 'Listening for authentication errors' :
+//https://developers.google.com/maps/documentation/javascript/events#auth-errors
 function gm_authFailure() {
     alert('There is a problem with Google Maps, please try again later...');
-};
+}
 
 // Initialize
 initMap = function() {
@@ -35,10 +37,6 @@ function AppViewModel() {
         this.foursquareId = place.foursquareId;
         this.showResult = ko.observable(true);
         this.removedResult = ko.observable(false);
-        this.marker;
-        //this.infowindow = ko.observable();
-        this.latlng;
-        this.location;
         this.status = ko.observable(true); // Google geocoding status
         this.address = ko.observable('');
         this.city = ko.observable('');
@@ -135,7 +133,7 @@ function AppViewModel() {
                     place.marker.addListener('click', (function(markerCopy) {
                         return function() {
                         self.foursquareRequest(place);
-                        }
+                        };
                     })(place.marker));
                     // If Geocoding was not successfull remove from list and flag status as false
                 } else {
@@ -156,7 +154,7 @@ function AppViewModel() {
         place.marker.setAnimation(google.maps.Animation.BOUNCE);
         // Open selected marker's info window
         infowindow.open(map, place.marker);
-    }
+    };
 
     // Stop any existing markers bouncing
     self.stopAllMarkers = function() {
@@ -210,7 +208,7 @@ function AppViewModel() {
     };
 
     // Set visible function declared to avoid errors on init()
-    self.setVisible = function() {}
+    self.setVisible = function() {};
 
     // Add location to list of shown places and show marker
     self.show = function(currentPlace) {
@@ -253,7 +251,7 @@ function AppViewModel() {
             self.showExtras(true);
         } else {
             // Hide extra filtering features;
-            self.showExtras(false)
+            self.showExtras(false);
                 // Filter shown results
             self.filterFunc(self.filterResults());
         }
@@ -266,4 +264,4 @@ function AppViewModel() {
 
     // INIT
     self.init();
-};
+}

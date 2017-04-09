@@ -38,3 +38,6 @@ Foursquare API for the location details:
 * if geocode fails, location is removed from the view entirely
 * filter function is working
 * setVisible called directly on marker object
+
+### Additional suggestions and changes per code review:
+* code passes jsHint
